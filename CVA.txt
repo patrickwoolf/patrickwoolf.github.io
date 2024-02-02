@@ -1,0 +1,38 @@
+[Premorbid status]
+Ambulation: {community, household} ambulation {with, without} device {with, without} assistance, 
+BADLs: {totally independent, partially independent, dependent}
+Living environment: {1,2,3+}F, elevator: {+,-}  
+
+[Physical Examination]
+Consciousness: E{1,2,3,4}M{1,2,3,4,5,6}V{1,2,3,4,5}, {clear, disoriented}
+General appearance: {fair spirit, ill looking}
+Ability to follow commands: {consistent, inconsistent, follow by pantomime}
+Cognition: {fair response, impaired, aphasic}
+Tubes: NG{+, -}, Foley{+,-}, Tracheostomy{+,-}
+
+Speech: {fluent, nonfluent}, repetition {intact, impaired}, comprehension {intact, impaired}, dysarthria({+,-}), aphasia({+,-})  
+Swallowing: {oral feeding {with, without} choking, NG}
+Clear water test (3-ml):
+- Swallowing reflex: {prompt, mildly delayed, absent}
+- Laryngeal elevation: {fair, poor}
+- Choking: {+,-} ; after-swallow cough: {+, -}, 
+- Wet voice: {+,-}
+- Cough power: {functional, impaired}
+
+Cranial nerves: 
+impaired: I{-,+}, II{-,+}, III{-,+}, IV{-,+}, V{-,+}, VI{-,+}, VII{-,+}, VIII{-,+}, IX{-,+}, X{-,+}, XI{-,+}, XII{-,+}
+Motor status:
+Brunnstrom stage: {R,L} UE proximal/distal/ LE: {I,II,III,IV,V}/{I,II,III,IV,V}/{I,II,III,IV,V}
+Muscle power: 
+ RUE proximal/distal: {1,2,3,4,5}/{1,2,3,4,5}, RLE proximal/distal: {1,2,3,4,5}/{1,2,3,4,5}
+ LUE proximal/distal: {1,2,3,4,5}/{1,2,3,4,5}, LLE proximal/distal: {1,2,3,4,5}/{1,2,3,4,5}
+DTR: RUE/RLE/LUE/LLE: {+,++,+++}/{+,++,+++}/{+,++,+++}/{+,++,+++}
+Spasticity (MAS): {0,1,1+,2,3}
+Sensation: {symmetrical, R hypoesthesia, L hypoesthesia} to light touch, pain stimuli
+Coordination: dysmetria{+,-}
+Sphincter: {incontinent with Foley, with diaper, continent}
+
+Functional status: 
+- bed mobility and transfer: {supervision, contact guard, assistance}; 
+- ambulation: {with, without} device under {supervision, contact guard, assistance}, gait {unassessible, unsteady, steady}
+BADLs: {totally dependent, partially dependent, independent}

@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dynamic Website Generator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f4f4f4;
+            text-align: center;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        .form-group {
+            width: 80%;
+            margin-bottom: 20px;
+            background-color: #fff;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            display: inline-block;
+        }
+
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        input {
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        button {
+            background-color: #4caf50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+
+        .form-group textarea {
+            width: 100%;
+        }
+
+        #resultContainer {
+            margin-top: 20px;
+            text-align: left;
+        }
+
+        p {
+            background-color: #fff;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        select. {
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Dynamic Website Generator</h1>
+    <i>Patrick Yi-Hong Wu</i>
+    <p>PE: {intact, impaired}<br>↓<br>PE: <select><option>intact</option><option>impaired</option></select></p>
+    <form id="dynamicForm">
+        <div id="dynamicContent"></div>
+
+        <button type="button" onclick="addFormGroup()">Add Form</button>
+        <button type="button" onclick="generateResult()">Generate Result</button>
+        <button type="button" onclick="copyResult()">Copy Result</button>
+        <button type="button" onclick="generateHTML()">Generate HTML</button>
+    </form>
+
+    <div id="resultContainer"></div>
+
+    <script>
+
+function addFormGroup() {
+    const dynamicContent = document.getElementById('dynamicContent');
+    const formGroup = document.createElement('div');
+    formGroup.classList.add('form-group');
+
+    const label = document.createElement('label');
+    label.textContent = 'Enter your content:';
+
+    const textarea = document.createElement('textarea');
+    textarea.placeholder = 'Type here...';
+
+    formGroup.appendChild(label);
+    formGroup.appendChild(textarea);
+
+    dynamicContent.appendChild(formGroup);
+}
+
+
+function generateResult() {
+    const dynamicContent = document.getElementById('dynamicContent');
+    const formGroups = dynamicContent.getElementsByClassName('form-group');
+    const resultContainer = document.getElementById('resultContainer');
+    resultContainer.innerHTML = ''; // Clear previous content
+    let selectCounter = 0;
+
+    for (const formGroup of formGroups) {
+        const textarea = formGroup.querySelector('textarea');
+        const userInput = textarea.value;
+
+        const contentFragment = document.createDocumentFragment();
+
+        const lines = userInput.split('\n');
+
+        for (let i = 0; i < lines.length; i++) {
+            if (i > 0) {
+                contentFragment.appendChild(document.createElement('br'));
+            }
+
+            const line = lines[i];
+
+            const regex = /\{([^}]+)\}/g;
+            let match;
+            let lastIndex = 0;
+
+            while ((match = regex.exec(line)) !== null) {
+                contentFragment.appendChild(document.createTextNode(line.substring(lastIndex, match.index)));
+
+                const selectElement = document.createElement('select');
+                selectElement.id = 'select' + selectCounter++;
+                const options = match[1].split(',').map(option => option.trim());
+
+                for (const option of options) {
+                    const optionElement = document.createElement('option');
+                    optionElement.textContent = option;
+                    optionElement.id = option.replace(/\s+/g, '_');
+                    selectElement.appendChild(optionElement);
+                }
+
+                contentFragment.appendChild(selectElement);
+                lastIndex = regex.lastIndex;
+            }
+
+            if (lastIndex < line.length) {
+                contentFragment.appendChild(document.createTextNode(line.substring(lastIndex)));
+            }
+        }
+
+        const contentElement = document.createElement('p');
+        contentElement.appendChild(contentFragment);
+        resultContainer.appendChild(contentElement);
+    }
+}
+
+function copyResult() {
+    const resultContainer = document.getElementById('resultContainer');
+    const paragraphs = resultContainer.getElementsByTagName('p');
+    let copiedContent = '';
+
+    for (const paragraph of paragraphs) {
+        let formattedLine = '';
+        let currentNode = paragraph.firstChild;
+
+        while (currentNode) {
+            if (currentNode.nodeType === Node.TEXT_NODE) {
+                formattedLine += currentNode.nodeValue;
+            } else if (currentNode.tagName === 'SELECT') {
+                const selectedOption = currentNode.options[currentNode.selectedIndex];
+                const selectedText = selectedOption ? selectedOption.textContent : '';
+                formattedLine += selectedText.trim();
+            } else if (currentNode.tagName === 'BR') {
+                formattedLine += '\n';
+            }
+
+            currentNode = currentNode.nextSibling;
+        }
+
+        copiedContent += formattedLine.trim() + '\n';
+    }
+
+    if (copiedContent.trim() !== '') {
+        const textarea = document.createElement('textarea');
+        textarea.value = copiedContent;
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+
+        alert('Formatted Text copied to clipboard:\n' + copiedContent);
+    } else {
+        alert('No result to copy!');
+    }
+}
+
+function generateHTML() {
+    const resultContainer = document.getElementById('resultContainer');
+    const htmlContent = resultContainer.innerHTML;
+
+    const blob = new Blob([htmlContent], { type: 'text/html' });
+    const link = document.createElement('a');
+
+    link.href = URL.createObjectURL(blob);
+    link.download = 'result.html';
+
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+}
+
+
+    </script>
+</body>
+</html>

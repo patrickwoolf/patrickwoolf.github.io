@@ -11,7 +11,7 @@ Cognition: {fair response, impaired, aphasic}
 Tubes: NG{+, -}, Foley{+,-}, Tracheostomy{+,-}
 
 Speech: {fluent, nonfluent}, repetition {intact, impaired}, comprehension {intact, impaired}, dysarthria({+,-}), aphasia({+,-})  
-Swallowing: {oral feeding {with, without} choking, NG}
+Swallowing: {oral feeding, NG}
 Clear water test (3-ml):
 - Swallowing reflex: {prompt, mildly delayed, absent}
 - Laryngeal elevation: {fair, poor}

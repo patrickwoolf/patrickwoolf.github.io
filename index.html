@@ -80,6 +80,24 @@
             text-align: left;
         }
 
+        .selectable-box {
+            display: inline-block;
+            padding: 8px;
+            margin: 5px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .selectable-box:hover {
+            background-color: #e0f7fa; /* Light green on hover */
+        }
+
+        .selectable-box.selected {
+            background-color: #c8e6c9; /* Light green when selected */
+        }
+
         p {
             background-color: #fff;
             padding: 15px;
@@ -110,10 +128,15 @@
     <h1>Dynamic Website Generator</h1>
     <a href="https://github.com/patrickwoolf/dynamicweb" target="_blank"><img id="floatingImage" src="icon.png" alt="Homepage"></a>
     <i>Patrick Yi-Hong Wu</i>
-    <p>PE: {intact, impaired}<br>↓<br>PE: <select><option>intact</option><option>impaired</option></select></p>
+    <p>PE: {intact, impaired}
+    <br>↓<br>
+    PE:
+    <span class="selectable-box" onclick="toggleSelected(this)">intact</span>
+    <span class="selectable-box" onclick="toggleSelected(this)">impaired</span>
+    </p>
+    
     <form id="dynamicForm">
         <div id="dynamicContent"></div>
-        
         <button type="button" onclick="addFormGroup()">Add Form</button>
         <button type="button" onclick="generateResult()">Generate Result</button>
     </form>
@@ -122,15 +145,15 @@
 
     <form id="dynamicForm">
         <button type="button" onclick="copyResult()">Copy Result</button>
-        <button type="button" onclick="generateHTML()">Generate HTML</button>
     </form>
     
     <script>
+    
 document.addEventListener("DOMContentLoaded", function() {
             // Add a default form group when the document is ready
             addFormGroup();
         });
-
+    
 function addFormGroup() {
     const dynamicContent = document.getElementById('dynamicContent');
     const formGroup = document.createElement('div');
@@ -158,8 +181,12 @@ function addFormGroup() {
 
     dynamicContent.appendChild(formGroup);
 }
-
-
+    
+function autoResize(textarea) {
+    textarea.style.height = 'auto';
+    textarea.style.height = (textarea.scrollHeight) + 'px';
+}
+    
 function generateResult() {
     const dynamicContent = document.getElementById('dynamicContent');
     const formGroups = dynamicContent.getElementsByClassName('form-group');
@@ -168,112 +195,95 @@ function generateResult() {
     let selectCounter = 0;
 
     for (const formGroup of formGroups) {
-        const textarea = formGroup.querySelector('textarea');
-        const userInput = textarea.value;
+	const textarea = formGroup.querySelector('textarea');
+	const userInput = textarea.value;
 
-        const contentFragment = document.createDocumentFragment();
+	const contentFragment = document.createDocumentFragment();
 
-        const lines = userInput.split('\n');
+	const lines = userInput.split('\n');
 
-        for (let i = 0; i < lines.length; i++) {
-            if (i > 0) {
-                contentFragment.appendChild(document.createElement('br'));
-            }
+	for (let i = 0; i < lines.length; i++) {
+	    if (i > 0) {
+		contentFragment.appendChild(document.createElement('br'));
+	    }
 
-            const line = lines[i];
+	    const line = lines[i];
 
-            const regex = /\{([^}]+)\}/g;
-            let match;
-            let lastIndex = 0;
+	    const regex = /\{([^}]+)\}/g;
+	    let match;
+	    let lastIndex = 0;
 
-            while ((match = regex.exec(line)) !== null) {
-                contentFragment.appendChild(document.createTextNode(line.substring(lastIndex, match.index)));
+	    while ((match = regex.exec(line)) !== null) {
+		contentFragment.appendChild(document.createTextNode(line.substring(lastIndex, match.index)));
 
-                const selectElement = document.createElement('select');
-                selectElement.id = 'select' + selectCounter++;
-                const options = match[1].split(',').map(option => option.trim());
+		const options = match[1].split(',').map(option => option.trim());
 
-                for (const option of options) {
-                    const optionElement = document.createElement('option');
-                    optionElement.textContent = option;
-                    optionElement.id = option.replace(/\s+/g, '_');
-                    selectElement.appendChild(optionElement);
-                }
+		for (const option of options) {
+		    const boxElement = document.createElement('div');
+		    boxElement.textContent = option;
+		    boxElement.classList.add('selectable-box');
+		    boxElement.onclick = function () {
+			boxElement.classList.toggle('selected'); // Toggle the "selected" class
+		    };
 
-                contentFragment.appendChild(selectElement);
-                lastIndex = regex.lastIndex;
-            }
+		    contentFragment.appendChild(boxElement);
+		}
 
-            if (lastIndex < line.length) {
-                contentFragment.appendChild(document.createTextNode(line.substring(lastIndex)));
-            }
-        }
+		lastIndex = regex.lastIndex;
+	    }
 
-        const contentElement = document.createElement('p');
-        contentElement.appendChild(contentFragment);
-        resultContainer.appendChild(contentElement);
+	    if (lastIndex < line.length) {
+		contentFragment.appendChild(document.createTextNode(line.substring(lastIndex)));
+	    }
+	}
+
+	const contentElement = document.createElement('p');
+	contentElement.appendChild(contentFragment);
+	resultContainer.appendChild(contentElement);
     }
 }
 
- function autoResize(textarea) {
-    textarea.style.height = 'auto';
-    textarea.style.height = (textarea.scrollHeight) + 'px';
-}
-        
 function copyResult() {
     const resultContainer = document.getElementById('resultContainer');
     const paragraphs = resultContainer.getElementsByTagName('p');
     let copiedContent = '';
 
     for (const paragraph of paragraphs) {
-        let formattedLine = '';
-        let currentNode = paragraph.firstChild;
+	let formattedLine = '';
+	let currentNode = paragraph.firstChild;
 
-        while (currentNode) {
-            if (currentNode.nodeType === Node.TEXT_NODE) {
-                formattedLine += currentNode.nodeValue;
-            } else if (currentNode.tagName === 'SELECT') {
-                const selectedOption = currentNode.options[currentNode.selectedIndex];
-                const selectedText = selectedOption ? selectedOption.textContent : '';
-                formattedLine += selectedText.trim();
-            } else if (currentNode.tagName === 'BR') {
-                formattedLine += '\n';
-            }
+	while (currentNode) {
+	    if (currentNode.nodeType === Node.TEXT_NODE) {
+		formattedLine += currentNode.nodeValue;
+	    } else if (currentNode.tagName === 'DIV') {
+		const isBoxSelected = currentNode.classList.contains('selected');
+		const boxText = isBoxSelected ? currentNode.textContent.trim() : '';
+		formattedLine += boxText;
+	    } else if (currentNode.tagName === 'BR') {
+		formattedLine += '\n';
+	    }
 
-            currentNode = currentNode.nextSibling;
-        }
+	    currentNode = currentNode.nextSibling;
+	}
 
-        copiedContent += formattedLine.trim() + '\n';
+	copiedContent += formattedLine.trim() + '\n';
     }
 
     if (copiedContent.trim() !== '') {
-        const textarea = document.createElement('textarea');
-        textarea.value = copiedContent;
-        document.body.appendChild(textarea);
-        textarea.select();
-        document.execCommand('copy');
-        document.body.removeChild(textarea);
+	const textarea = document.createElement('textarea');
+	textarea.value = copiedContent;
+	document.body.appendChild(textarea);
+	textarea.select();
+	document.execCommand('copy');
+	document.body.removeChild(textarea);
 
-        alert('Formatted Text copied to clipboard:\n' + copiedContent);
+	alert('Formatted Text copied to clipboard:\n' + copiedContent);
     } else {
-        alert('No result to copy!');
+	alert('No result to copy!');
     }
 }
 
-function generateHTML() {
-    const resultContainer = document.getElementById('resultContainer');
-    const htmlContent = resultContainer.innerHTML;
 
-    const blob = new Blob([htmlContent], { type: 'text/html' });
-    const link = document.createElement('a');
-
-    link.href = URL.createObjectURL(blob);
-    link.download = 'result.html';
-
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-}
 
 window.addEventListener("scroll", function() {
     var floatingImage = document.getElementById("floatingImage");

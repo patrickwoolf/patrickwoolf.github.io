@@ -74,10 +74,20 @@
             border: 1px solid #ccc;
             border-radius: 4px;
         }
+
+        #floatingImage {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            width: 10px; /* Adjust the width as needed */
+            height: auto;
+            z-index: 1000;
+        }
     </style>
 </head>
 <body>
     <h1>Dynamic Website Generator</h1>
+    <a href="https://github.com/patrickwoolf/dynamicweb"><img id="floatingImage" src="img.png" alt="Floating Image"></a>
     <i>Patrick Yi-Hong Wu</i>
     <p>PE: {intact, impaired}<br>↓<br>PE: <select><option>intact</option><option>impaired</option></select></p>
     <form id="dynamicForm">
@@ -221,6 +231,12 @@ function generateHTML() {
     document.body.removeChild(link);
 }
 
+        window.addEventListener("scroll", function() {
+            var floatingImage = document.getElementById("floatingImage");
+            var scrollPosition = window.scrollY;
+
+            floatingImage.style.top = (10 + scrollPosition) + "px";
+        });
 
     </script>
 </body>

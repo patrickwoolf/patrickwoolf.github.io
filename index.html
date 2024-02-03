@@ -113,7 +113,7 @@
     <p>PE: {intact, impaired}<br>↓<br>PE: <select><option>intact</option><option>impaired</option></select></p>
     <form id="dynamicForm">
         <div id="dynamicContent"></div>
-
+        
         <button type="button" onclick="addFormGroup()">Add Form</button>
         <button type="button" onclick="generateResult()">Generate Result</button>
     </form>
@@ -126,6 +126,10 @@
     </form>
     
     <script>
+document.addEventListener("DOMContentLoaded", function() {
+            // Add a default form group when the document is ready
+            addFormGroup();
+        });
 
 function addFormGroup() {
     const dynamicContent = document.getElementById('dynamicContent');
@@ -210,10 +214,11 @@ function generateResult() {
         resultContainer.appendChild(contentElement);
     }
 }
-        function autoResize(textarea) {
-            textarea.style.height = 'auto';
-            textarea.style.height = (textarea.scrollHeight) + 'px';
-        }
+
+ function autoResize(textarea) {
+    textarea.style.height = 'auto';
+    textarea.style.height = (textarea.scrollHeight) + 'px';
+}
         
 function copyResult() {
     const resultContainer = document.getElementById('resultContainer');
@@ -270,13 +275,13 @@ function generateHTML() {
     document.body.removeChild(link);
 }
 
-        window.addEventListener("scroll", function() {
-            var floatingImage = document.getElementById("floatingImage");
-            var scrollPosition = window.scrollY;
+window.addEventListener("scroll", function() {
+    var floatingImage = document.getElementById("floatingImage");
+    var scrollPosition = window.scrollY;
 
-            // Set the top position, ensuring it doesn't exceed the maximum
-            floatingImage.style.top = maxTopPosition + "px";
-        });
+    // Set the top position, ensuring it doesn't exceed the maximum
+    floatingImage.style.top = maxTopPosition + "px";
+});
 
     </script>
 </body>

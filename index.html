@@ -79,7 +79,7 @@
             position: fixed;
             top: 10px;
             right: 10px;
-            width: 10px; /* Adjust the width as needed */
+            width: 3%; /* Adjust the width as needed */
             height: auto;
             z-index: 1000;
         }
@@ -235,7 +235,8 @@ function generateHTML() {
             var floatingImage = document.getElementById("floatingImage");
             var scrollPosition = window.scrollY;
 
-            floatingImage.style.top = (10 + scrollPosition) + "px";
+            // Set the top position, ensuring it doesn't exceed the maximum
+            floatingImage.style.top = maxTopPosition + "px";
         });
 
     </script>

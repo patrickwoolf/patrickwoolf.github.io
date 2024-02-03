@@ -17,7 +17,8 @@
         }
 
         .form-group {
-            width: 80%;
+			position: relative;
+			width: 80%;
             margin-bottom: 20px;
             background-color: #fff;
             padding: 15px;
@@ -33,7 +34,7 @@
         }
 
         input {
-            width: 100%;
+            width: 0%;
             padding: 8px;
             box-sizing: border-box;
             border: 1px solid #ccc;
@@ -51,9 +52,10 @@
         }
 
         .form-group textarea {
-            width: 100%;
+            width: 90%;
         }
-
+        
+        
         .delete-button {
             position: absolute;
             top: 5px;
@@ -66,7 +68,7 @@
             border-radius: 50%; /* This creates a circle */
             cursor: pointer;
         }
-
+        
         #resultContainer {
             margin-top: 20px;
             text-align: left;
@@ -130,8 +132,16 @@ function addFormGroup() {
     const textarea = document.createElement('textarea');
     textarea.placeholder = 'Type here...';
 
+	const deleteButton = document.createElement('button');
+	deleteButton.textContent = 'x';
+  	deleteButton.classList.add('delete-button');
+  	deleteButton.onclick = function () {
+    	dynamicContent.removeChild(formGroup);
+  	};
+
     formGroup.appendChild(label);
     formGroup.appendChild(textarea);
+	formGroup.appendChild(deleteButton);
 
     dynamicContent.appendChild(formGroup);
 }

@@ -132,16 +132,16 @@ function addFormGroup() {
     const textarea = document.createElement('textarea');
     textarea.placeholder = 'Type here...';
 
-	const deleteButton = document.createElement('button');
-	deleteButton.textContent = 'x';
-  	deleteButton.classList.add('delete-button');
-  	deleteButton.onclick = function () {
-    	dynamicContent.removeChild(formGroup);
-  	};
+    const deleteButton = document.createElement('button');
+    deleteButton.textContent = 'x';
+    deleteButton.classList.add('delete-button');
+    deleteButton.onclick = function () {
+        dynamicContent.removeChild(formGroup);
+    };
 
     formGroup.appendChild(label);
     formGroup.appendChild(textarea);
-	formGroup.appendChild(deleteButton);
+    formGroup.appendChild(deleteButton);
 
     dynamicContent.appendChild(formGroup);
 }

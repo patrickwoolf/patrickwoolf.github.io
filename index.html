@@ -17,8 +17,8 @@
         }
 
         .form-group {
-			position: relative;
-			width: 80%;
+            position: relative;
+            width: 80%;
             margin-bottom: 20px;
             background-color: #fff;
             padding: 15px;
@@ -52,32 +52,49 @@
         }
 
         .form-group textarea {
-            width: calc(100% - 30px); /* Adjust the width as needed */
+            width: calc(100% - 30px);
             padding: 8px;
             box-sizing: border-box;
             border: 1px solid #ccc;
             border-radius: 4px;
-            resize: none; /* Prevent resizing by user */
-            overflow-y: hidden; /* Hide vertical scrollbar */
+            resize: none;
+            overflow-y: hidden;
         }
-        
-        
+
         .delete-button {
             position: absolute;
             top: 5px;
             right: 5px;
             width: 15px;
-            background-color: transparent; /* #ff4d4d; */
+            background-color: transparent;
             color: black;
             border: none;
             padding: 1px;
-            border-radius: 50%; /* This creates a circle */
+            border-radius: 50%;
             cursor: pointer;
         }
-        
+
         #resultContainer {
             margin-top: 20px;
             text-align: left;
+        }
+
+        .selectable-box {
+            display: inline-block;
+            padding: 8px;
+            margin: 5px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .selectable-box:hover {
+            background-color: #e0f7fa;
+        }
+
+        .selectable-box.selected {
+            background-color: #c8e6c9;
         }
 
         p {
@@ -88,7 +105,7 @@
             margin-bottom: 20px;
         }
 
-        select. {
+        select {
             width: 100%;
             padding: 8px;
             box-sizing: border-box;
@@ -100,7 +117,7 @@
             position: fixed;
             top: 10px;
             right: 10px;
-            width: 6%; /* Adjust the width as needed */
+            width: 6%;
             height: auto;
             z-index: 1000;
         }
@@ -108,12 +125,18 @@
 </head>
 <body>
     <h1>Dynamic Website Generator</h1>
-    <a href="https://github.com/patrickwoolf/dynamicweb" target="_blank"><img id="floatingImage" src="icon.png" alt="Homepage"></a>
+    <a href="https://github.com/patrickwoolf/dynamicweb" target="_blank">
+        <img id="floatingImage" src="icon.png" alt="Homepage">
+    </a>
     <i>Patrick Yi-Hong Wu</i>
-    <p>PE: {intact, impaired}<br>↓<br>PE: <select><option>intact</option><option>impaired</option></select></p>
+    <p>PE: {intact, impaired} <br>↓<br>
+        PE:
+        <span class="selectable-box" onclick="toggleSelected(this)">intact</span>
+        <span class="selectable-box" onclick="toggleSelected(this)">impaired</span>
+    </p>
+    
     <form id="dynamicForm">
         <div id="dynamicContent"></div>
-        
         <button type="button" onclick="addFormGroup()">Add Form</button>
         <button type="button" onclick="generateResult()">Generate Result</button>
     </form>
@@ -122,167 +145,168 @@
 
     <form id="dynamicForm">
         <button type="button" onclick="copyResult()">Copy Result</button>
-        <button type="button" onclick="generateHTML()">Generate HTML</button>
     </form>
     
     <script>
-document.addEventListener("DOMContentLoaded", function() {
+        document.addEventListener("DOMContentLoaded", function() {
             // Add a default form group when the document is ready
             addFormGroup();
+            // Load saved textarea values from localStorage
+            loadSavedValues();
         });
 
-function addFormGroup() {
-    const dynamicContent = document.getElementById('dynamicContent');
-    const formGroup = document.createElement('div');
-    formGroup.classList.add('form-group');
+        function addFormGroup() {
+            const dynamicContent = document.getElementById('dynamicContent');
+            const formGroup = document.createElement('div');
+            formGroup.classList.add('form-group');
 
-    const label = document.createElement('label');
-    label.textContent = 'Enter your content:';
+            const label = document.createElement('label');
+            label.textContent = 'Enter your content:';
 
-    const textarea = document.createElement('textarea');
-    textarea.placeholder = 'Type here...';
-    textarea.addEventListener('input', function () {
+            const textarea = document.createElement('textarea');
+            textarea.placeholder = 'Type here...';
+            textarea.id = 'textarea' + dynamicContent.childElementCount;
+            textarea.addEventListener('input', function () {
                 autoResize(this);
+                saveValueToLocalStorage(this);
             });
 
-    const deleteButton = document.createElement('button');
-    deleteButton.textContent = 'x';
-    deleteButton.classList.add('delete-button');
-    deleteButton.onclick = function () {
-        dynamicContent.removeChild(formGroup);
-    };
+            const deleteButton = document.createElement('button');
+            deleteButton.textContent = 'x';
+            deleteButton.classList.add('delete-button');
+            deleteButton.onclick = function () {
+                dynamicContent.removeChild(formGroup);
+                localStorage.removeItem(textarea.id);
+            };
 
-    formGroup.appendChild(label);
-    formGroup.appendChild(textarea);
-    formGroup.appendChild(deleteButton);
+            formGroup.appendChild(label);
+            formGroup.appendChild(textarea);
+            formGroup.appendChild(deleteButton);
 
-    dynamicContent.appendChild(formGroup);
-}
+            dynamicContent.appendChild(formGroup);
+        }
 
+        function autoResize(textarea) {
+            textarea.style.height = 'auto';
+            textarea.style.height = (textarea.scrollHeight) + 'px';
+        }
 
-function generateResult() {
-    const dynamicContent = document.getElementById('dynamicContent');
-    const formGroups = dynamicContent.getElementsByClassName('form-group');
-    const resultContainer = document.getElementById('resultContainer');
-    resultContainer.innerHTML = ''; // Clear previous content
-    let selectCounter = 0;
+        function generateResult() {
+            const dynamicContent = document.getElementById('dynamicContent');
+            const formGroups = dynamicContent.getElementsByClassName('form-group');
+            const resultContainer = document.getElementById('resultContainer');
+            resultContainer.innerHTML = '';
 
-    for (const formGroup of formGroups) {
-        const textarea = formGroup.querySelector('textarea');
-        const userInput = textarea.value;
+            for (const formGroup of formGroups) {
+                const textarea = formGroup.querySelector('textarea');
+                const userInput = textarea.value;
+                const contentFragment = document.createDocumentFragment();
+                const lines = userInput.split('\n');
 
-        const contentFragment = document.createDocumentFragment();
+                for (let i = 0; i < lines.length; i++) {
+                    if (i > 0) {
+                        contentFragment.appendChild(document.createElement('br'));
+                    }
 
-        const lines = userInput.split('\n');
+                    const line = lines[i];
+                    const regex = /\{([^}]+)\}/g;
+                    let match;
+                    let lastIndex = 0;
 
-        for (let i = 0; i < lines.length; i++) {
-            if (i > 0) {
-                contentFragment.appendChild(document.createElement('br'));
-            }
+                    while ((match = regex.exec(line)) !== null) {
+                        contentFragment.appendChild(document.createTextNode(line.substring(lastIndex, match.index)));
 
-            const line = lines[i];
+                        const options = match[1].split(',').map(option => option.trim());
 
-            const regex = /\{([^}]+)\}/g;
-            let match;
-            let lastIndex = 0;
+                        for (const option of options) {
+                            const boxElement = document.createElement('div');
+                            boxElement.textContent = option;
+                            boxElement.classList.add('selectable-box');
+                            boxElement.onclick = function () {
+                                boxElement.classList.toggle('selected');
+                            };
 
-            while ((match = regex.exec(line)) !== null) {
-                contentFragment.appendChild(document.createTextNode(line.substring(lastIndex, match.index)));
+                            contentFragment.appendChild(boxElement);
+                        }
 
-                const selectElement = document.createElement('select');
-                selectElement.id = 'select' + selectCounter++;
-                const options = match[1].split(',').map(option => option.trim());
+                        lastIndex = regex.lastIndex;
+                    }
 
-                for (const option of options) {
-                    const optionElement = document.createElement('option');
-                    optionElement.textContent = option;
-                    optionElement.id = option.replace(/\s+/g, '_');
-                    selectElement.appendChild(optionElement);
+                    if (lastIndex < line.length) {
+                        contentFragment.appendChild(document.createTextNode(line.substring(lastIndex)));
+                    }
                 }
 
-                contentFragment.appendChild(selectElement);
-                lastIndex = regex.lastIndex;
-            }
-
-            if (lastIndex < line.length) {
-                contentFragment.appendChild(document.createTextNode(line.substring(lastIndex)));
+                const contentElement = document.createElement('p');
+                contentElement.appendChild(contentFragment);
+                resultContainer.appendChild(contentElement);
             }
         }
 
-        const contentElement = document.createElement('p');
-        contentElement.appendChild(contentFragment);
-        resultContainer.appendChild(contentElement);
-    }
-}
-
- function autoResize(textarea) {
-    textarea.style.height = 'auto';
-    textarea.style.height = (textarea.scrollHeight) + 'px';
-}
-        
-function copyResult() {
-    const resultContainer = document.getElementById('resultContainer');
-    const paragraphs = resultContainer.getElementsByTagName('p');
-    let copiedContent = '';
-
-    for (const paragraph of paragraphs) {
-        let formattedLine = '';
-        let currentNode = paragraph.firstChild;
-
-        while (currentNode) {
-            if (currentNode.nodeType === Node.TEXT_NODE) {
-                formattedLine += currentNode.nodeValue;
-            } else if (currentNode.tagName === 'SELECT') {
-                const selectedOption = currentNode.options[currentNode.selectedIndex];
-                const selectedText = selectedOption ? selectedOption.textContent : '';
-                formattedLine += selectedText.trim();
-            } else if (currentNode.tagName === 'BR') {
-                formattedLine += '\n';
-            }
-
-            currentNode = currentNode.nextSibling;
+        function saveValueToLocalStorage(textarea) {
+            localStorage.setItem(textarea.id, textarea.value);
         }
 
-        copiedContent += formattedLine.trim() + '\n';
-    }
+        function loadSavedValues() {
+            const dynamicContent = document.getElementById('dynamicContent');
+            const formGroups = dynamicContent.getElementsByClassName('form-group');
 
-    if (copiedContent.trim() !== '') {
-        const textarea = document.createElement('textarea');
-        textarea.value = copiedContent;
-        document.body.appendChild(textarea);
-        textarea.select();
-        document.execCommand('copy');
-        document.body.removeChild(textarea);
+            for (const formGroup of formGroups) {
+                const textarea = formGroup.querySelector('textarea');
+                const savedValue = localStorage.getItem(textarea.id);
 
-        alert('Formatted Text copied to clipboard:\n' + copiedContent);
-    } else {
-        alert('No result to copy!');
-    }
-}
+                if (savedValue !== null) {
+                    textarea.value = savedValue;
+                    autoResize(textarea);
+                }
+            }
+        }
 
-function generateHTML() {
-    const resultContainer = document.getElementById('resultContainer');
-    const htmlContent = resultContainer.innerHTML;
+        function copyResult() {
+            const resultContainer = document.getElementById('resultContainer');
+            const paragraphs = resultContainer.getElementsByTagName('p');
+            let copiedContent = '';
 
-    const blob = new Blob([htmlContent], { type: 'text/html' });
-    const link = document.createElement('a');
+            for (const paragraph of paragraphs) {
+                let formattedLine = '';
+                let currentNode = paragraph.firstChild;
 
-    link.href = URL.createObjectURL(blob);
-    link.download = 'result.html';
+                while (currentNode) {
+                    if (currentNode.nodeType === Node.TEXT_NODE) {
+                        formattedLine += currentNode.nodeValue;
+                    } else if (currentNode.tagName === 'DIV') {
+                        const isBoxSelected = currentNode.classList.contains('selected');
+                        const boxText = isBoxSelected ? currentNode.textContent.trim() : '';
+                        formattedLine += boxText;
+                    } else if (currentNode.tagName === 'BR') {
+                        formattedLine += '\n';
+                    }
 
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-}
+                    currentNode = currentNode.nextSibling;
+                }
 
-window.addEventListener("scroll", function() {
-    var floatingImage = document.getElementById("floatingImage");
-    var scrollPosition = window.scrollY;
+                copiedContent += formattedLine.trim() + '\n';
+            }
 
-    // Set the top position, ensuring it doesn't exceed the maximum
-    floatingImage.style.top = maxTopPosition + "px";
-});
+            if (copiedContent.trim() !== '') {
+                const textarea = document.createElement('textarea');
+                textarea.value = copiedContent;
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
 
+                alert('Formatted Text copied to clipboard:\n' + copiedContent);
+            } else {
+                alert('No result to copy!');
+            }
+        }
+
+        window.addEventListener("scroll", function() {
+            var floatingImage = document.getElementById("floatingImage");
+            var scrollPosition = window.scrollY;
+            floatingImage.style.top = maxTopPosition + "px";
+        });
     </script>
 </body>
 </html>

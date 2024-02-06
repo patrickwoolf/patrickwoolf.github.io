@@ -10,4 +10,4 @@
 - Best uses: to generate any physical examinations, customer questionairres, etc. based on your needs.
 
 - PE: \{intact, impaired\} ->
-  ![example]("example.png")
+  ![example](example.png)
